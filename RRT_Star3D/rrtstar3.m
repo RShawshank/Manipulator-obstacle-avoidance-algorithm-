@@ -17,7 +17,8 @@ stepsize = 10;
 threshold = 10;
 maxFailedAttempts = 10000;
 display = true;
-searchSize = [250 250 250];      %探索空间六面体
+searchSize = [500 500 500];      %探索空间六面体
+%空间六面体很大的话，会导致两棵树的方向趋于一致
 %% 绘制起点和终点
 hold on;%保持图形保持功能
 scatter3(source(1),source(2),source(3),"filled","g");
@@ -31,18 +32,20 @@ tree2ExpansionFail=false;
 %% 循环
 while ~tree1ExpansionFail || ~tree2ExpansionFail
     if ~tree1ExpansionFail 
-        [RRTree1,pathFound,tree1ExpansionFail]=rrtExtend3(RRTree1,RRTree2,goal,stepsize,maxFailedAttempts,threshold,circleCenter,r,searchSize);
+        [RRTree1,pathFound,tree1ExpansionFail,closestNode,newPoint]=rrtExtend3(RRTree1,RRTree2,goal,stepsize,maxFailedAttempts,threshold,circleCenter,r,searchSize);
         if ~tree1ExpansionFail && isempty(pathFound) && display
            %%%%
-            plot3([RRTree1(end,1);RRTree1(RRTree1(end,4),1)],[RRTree1(end,2);RRTree1(RRTree1(end,4),2)],[RRTree1(end,3);RRTree1(RRTree1(end,4),3)],'LineWidth',1); end
+           % plot3([RRTree1(end,1);RRTree1(RRTree1(end,4),1)],[RRTree1(end,2);RRTree1(RRTree1(end,4),2)],[RRTree1(end,3);RRTree1(RRTree1(end,4),3)],'LineWidth',1); end
+           plot3([closestNode(1);newPoint(1)],[closestNode(2);newPoint(2)],[closestNode(3);newPoint(3)],'LineWidth',1);end
     pause(0.05);
     end
     if ~tree2ExpansionFail 
-        [RRTree2,pathFound,tree2ExpansionFail]=rrtExtend3(RRTree2,RRTree1,goal,stepsize,maxFailedAttempts,threshold,circleCenter,r,searchSize);
-        %if ~isempty(pathFound), pathFound(4:5)=pathFound(5:-1:4); end 
+        [RRTree2,pathFound,tree2ExpansionFail,closestNode,newPoint]=rrtExtend3(RRTree2,RRTree1,source,stepsize,maxFailedAttempts,threshold,circleCenter,r,searchSize);
+        if ~isempty(pathFound), pathFound(4:5)=pathFound(5:-1:4); end 
         if ~tree2ExpansionFail && isempty(pathFound) && display
            %%%%
-            plot3([RRTree2(end,1);RRTree2(RRTree2(end,4),1)],[RRTree2(end,2);RRTree2(RRTree2(end,4),2)],[RRTree2(end,3);RRTree2(RRTree2(end,4),3)],'LineWidth',1); end
+            %plot3([RRTree2(end,1);RRTree2(RRTree2(end,4),1)],[RRTree2(end,2);RRTree2(RRTree2(end,4),2)],[RRTree2(end,3);RRTree2(RRTree2(end,4),3)],'LineWidth',1); end
+            plot3([closestNode(1);newPoint(1)],[closestNode(2);newPoint(2)],[closestNode(3);newPoint(3)],'LineWidth',1);end
     pause(0.05);
     end
 %% retrieve path from parent information

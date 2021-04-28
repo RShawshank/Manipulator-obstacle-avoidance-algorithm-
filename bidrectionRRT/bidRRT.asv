@@ -18,6 +18,7 @@ tic;
 RRTree1=double([source -1]);
 % 第二条随机生成树从终点出发
 RRTree2=double([goal -1]); 
+counter=0;
 % 拓展失败标志——true
 tree1ExpansionFail=false; 
 tree2ExpansionFail=false;
@@ -26,8 +27,9 @@ while ~tree1ExpansionFail || ~tree2ExpansionFail
     if ~tree1ExpansionFail 
         [RRTree1,pathFound,tree1ExpansionFail]=rrtExtend(RRTree1,RRTree2,goal,stepsize,maxFailedAttempts,disTh,map); 
         if ~tree1ExpansionFail && isempty(pathFound) && display
+           % line([RRTree1(end,2);RRTree1(RRTree1(end,3),2)],[RRTree1(end,1);RRTree1(RRTree1(end,3),1)],'linestyle','--','color','g');
+            %counter=counter+1;M(counter)=getframe;
             plot([RRTree1(end,2);RRTree1(RRTree1(end,3),2)],[RRTree1(end,1);RRTree1(RRTree1(end,3),1)],'LineWidth',1);
-        pause(0.05);
         end
     end
     % 从终点到起点进行拓展
@@ -35,15 +37,17 @@ while ~tree1ExpansionFail || ~tree2ExpansionFail
         [RRTree2,pathFound,tree2ExpansionFail]=rrtExtend(RRTree2,RRTree1,source,stepsize,maxFailedAttempts,disTh,map);
         if ~isempty(pathFound), pathFound(3:4)=pathFound(4:-1:3); end 
         if ~tree2ExpansionFail && isempty(pathFound) && display
+           % line([RRTree2(end,2);RRTree2(RRTree2(end,3),2)],[RRTree2(end,1);RRTree2(RRTree2(end,3),1)],'color','r');
+            %counter=counter+1;M(counter)=getframe;
             plot([RRTree2(end,2);RRTree2(RRTree2(end,3),2)],[RRTree2(end,1);RRTree2(RRTree2(end,3),1)],'LineWidth',1);
-           pause(0.05);
+            pause(0.
         end
     end
     % 路径可达
     if ~isempty(pathFound) 
          if display
-             plot([RRTree1(pathFound(1,3),2);pathFound(1,2);RRTree2(pathFound(1,4),2)],[RRTree1(pathFound(1,3),1);pathFound(1,1);RRTree2(pathFound(1,4),1)],'LineWidth',1);
-           pause(0.05);
+            line([RRTree1(pathFound(1,3),2);pathFound(1,2);RRTree2(pathFound(1,4),2)],[RRTree1(pathFound(1,3),1);pathFound(1,1);RRTree2(pathFound(1,4),1)],'color','green');
+            counter=counter+1;M(counter)=getframe;
          end
         % 获得完整路径
         path=[pathFound(1,1:2)]; 
@@ -72,4 +76,4 @@ for i=1:length(path)-1, pathLength=pathLength+distanceCost(path(i,1:2),path(i+1,
 fprintf('processing time=%d \nPath Length=%d \n\n', toc,pathLength); 
 imshow(map);
 %rectangle('position',[1 1 size(map)-1],'edgecolor','k');%画边框
-plot(path(:,2),path(:,1),'LineWidth',2,'color','r');
+line(path(:,2),path(:,1));

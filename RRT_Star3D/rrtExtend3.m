@@ -1,8 +1,8 @@
-function [RRTree1,pathFound,extendFail]=rrtExtend(RRTree1,RRTree2,goal,stepsize,maxFailedAttempts,threshold,circleCenter,r,searchSize)
+function [RRTree1,pathFound,extendFail,closestNode,newPoint]=rrtExtend3(RRTree1,RRTree2,goal,stepsize,maxFailedAttempts,threshold,circleCenter,r,searchSize)
 pathFound=[]; %if path found, returns new node connecting the two trees, index of the nodes in the two trees connected
 failedAttempts=0;
 while failedAttempts<=maxFailedAttempts
-    if rand < 0.5, 
+    if rand < 0.5
         sample=rand(1,3) .* searchSize; % random sample
     else
         sample=goal; % sample taken as goal to bias tree generation to goal
@@ -17,7 +17,7 @@ while failedAttempts<=maxFailedAttempts
         continue;
     end
     [A, I2] = min( distanceCost3(RRTree2(:,1:3),newPoint) ,[],1); % find closest in the second tree
-    if distanceCost3(RRTree2(I2(1),1:3),newPoint)<threshold, % if both trees are connected
+    if distanceCost3(RRTree2(I2(1),1:3),newPoint)<threshold % if both trees are connected
         pathFound=[newPoint I(1) I2(1)];extendFail=false;break; 
     end 
     [A, I3]=min( distanceCost3(RRTree1(:,1:3),newPoint) ,[],1); % check if new node is not already pre-existing in the tree
